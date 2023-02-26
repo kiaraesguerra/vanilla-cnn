@@ -14,7 +14,6 @@ def sparsity_from_degree(degree, module):
     return (1-degree/larger_dim)
 
 
-
 def lmp(model, sparsity):        
     for _, module in model.named_modules():            
         if isinstance(module, torch.nn.Conv2d):

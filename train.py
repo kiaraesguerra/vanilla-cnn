@@ -60,6 +60,7 @@ parser.add_argument('--pruning-method', type=str, default=None, choices=['LMP-S'
 parser.add_argument('--degree', type=int, default=None)
 parser.add_argument('--sparsity', type=float, default=None)
 parser.add_argument('--activation', type=str, default='tanh')
+parser.add_argument('--dirpath', type=str, default=None)
 
 args = parser.parse_args()
 
@@ -83,7 +84,7 @@ if __name__=='__main__':
     checkpoint_callback = ModelCheckpoint(monitor='val/loss', save_top_k=1, 
                         auto_insert_metric_name=False, save_last=False, filename='best', save_on_train_epoch_end=True, 
                         dirpath=f'Results/{args.experiment_name}', verbose=True)
-    logger = CSVLogger(f"Results/{args.experiment_name}", name="logs")
+    logger = CSVLogger(f"{args.dirpath}/Results/{args.experiment_name}", name="logs")
     trainer = Trainer(max_epochs=args.epochs, accelerator='gpu', callbacks=[checkpoint_callback], logger=logger, resume_from_checkpoint =args.ckpt_path_resume)
     trainer.fit(model, train_dl, test_dl, ckpt_path=args.ckpt_path)
     
@@ -92,4 +93,4 @@ if __name__=='__main__':
     model.load_state_dict(model_checkpoint["state_dict"])
     if args.pruning_method:
         remove_parameters(model)
-    torch.save(model.state_dict(), f'Results/{args.experiment_name}/{args.experiment_name}.pt')
+    torch.save(model.state_dict(), f'{args.dirpath}/Results/{args.experiment_name}/{args.experiment_name}.pt')

@@ -11,11 +11,11 @@ def get_dataloaders(args):
     train_transform, test_transform = get_transform(args)
 
     if args.dataset == "cifar10":
-        train_ds = torchvision.datasets.CIFAR10('datasets', train=True, transform=train_transform, download=True)
-        test_ds = torchvision.datasets.CIFAR10('datasets', train=False, transform=test_transform, download=True)
+        train_ds = torchvision.datasets.CIFAR10('./datasets', train=True, transform=train_transform, download=True)
+        test_ds = torchvision.datasets.CIFAR10('./datasets', train=False, transform=test_transform, download=True)
         args.num_classes = 10
     elif args.dataset == "cifar100":
-        train_ds = torchvision.datasets.CIFAR100('datasets', train=True, transform=train_transform, download=True)
+        train_ds = torchvision.datasets.CIFAR100('./datasets', train=True, transform=train_transform, download=True)
         test_ds = torchvision.datasets.CIFAR100('./datasets', train=False, transform=test_transform, download=True)
         args.num_classes = 100
     elif args.dataset == "svhn":

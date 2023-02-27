@@ -28,6 +28,7 @@ class Model(LightningModule):
         self.gamma=args.gamma
         self.epoch_loss, self.epoch_corr, self.epoch_acc = 0., 0., 0.
         self.milestones = args.milestones
+        self.min_lr=1e-6
         
         
         if args.optimizer=='sgd':

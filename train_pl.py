@@ -72,7 +72,7 @@ class Model(LightningModule):
         self.val_accuracy.update(preds, y)
 
         self.log("val/loss", loss, on_epoch=True, prog_bar=True, logger=True)
-        self.log("va/acc", self.val_accuracy, on_epoch=True, prog_bar=True, logger=True)
+        self.log("val/acc", self.val_accuracy, on_epoch=True, prog_bar=True, logger=True)
 
     def configure_optimizers(self):
         return [self.optimizer], [{"scheduler": self.scheduler, "interval": "epoch"}]

@@ -81,9 +81,9 @@ if __name__=='__main__':
             
         
     model = return_pl_module(model, args)
-    checkpoint_callback = ModelCheckpoint(monitor='val/loss', save_top_k=1, 
+    checkpoint_callback = ModelCheckpoint(monitor='val/acc', save_top_k=1, 
                         auto_insert_metric_name=False, save_last=True, filename='best', save_on_train_epoch_end=True, 
-                        dirpath=f'{args.dirpath}/Results/{args.experiment_name}', verbose=True, metric="val_accuracy")
+                        dirpath=f'{args.dirpath}/Results/{args.experiment_name}', verbose=True)
     logger = CSVLogger(f"{args.dirpath}/Results/{args.experiment_name}", name="logs")
     trainer = Trainer(max_epochs=args.epochs, accelerator='gpu', callbacks=[checkpoint_callback], logger=logger, resume_from_checkpoint=args.ckpt_path_resume)
     trainer.fit(model, train_dl, test_dl, ckpt_path=args.ckpt_path)

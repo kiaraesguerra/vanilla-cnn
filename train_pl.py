@@ -11,6 +11,30 @@ def return_pl_module(model, args):
     return model
 
 
+def measure_sparsity(model):
+
+    num_zeros = 0
+    num_elements = 0
+
+    for _, module in model.named_modules():
+        if isinstance(module, torch.nn.Conv2d):
+
+            module_num_zeros = torch.sum(module.weight == 0)
+            module_num_elements = module.weight.nelement()
+            num_zeros += module_num_zeros
+            num_elements += module_num_elements
+
+        elif isinstance(module, torch.nn.Linear):
+
+            module_num_zeros = torch.sum(module.weight == 0)
+            module_num_elements = module.weight.nelement()
+            num_zeros += module_num_zeros
+            num_elements += module_num_elements
+
+    sparsity = num_zeros / num_elements
+    return sparsity, (num_elements-num_zeros)
+
+
 class Model(LightningModule):
     def __init__(self, model, args):
         super().__init__()
@@ -77,6 +101,13 @@ class Model(LightningModule):
 
     def configure_optimizers(self):
         return [self.optimizer], [{"scheduler": self.scheduler, "interval": "epoch"}]
+    
+    def on_fit_end(self):
+        sparsity, nonzeros = measure_sparsity(self.model)
+        print(f'Sparsity = {sparsity}, nonzeros = {nonzeros}')
+        
+        
+    
     
     
     

@@ -106,7 +106,7 @@ class Model(LightningModule):
         return [self.optimizer], [{"scheduler": self.scheduler, "interval": "epoch"}]
     
     def on_fit_end(self):
-        sparsity, nonzeros = measure_sparsity(self.model)
+        sparsity, nonzeros = measure_sparsity(self.model.to('cuda'))
         print(f'Sparsity = {sparsity}, nonzeros = {nonzeros}')
         
         

@@ -15,6 +15,9 @@ def measure_sparsity(model):
 
     num_zeros = 0
     num_elements = 0
+    
+    num_zeros.to('cuda')
+    num_elements.to('cuda')
 
     for _, module in model.named_modules():
         if isinstance(module, torch.nn.Conv2d):

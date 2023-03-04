@@ -105,7 +105,7 @@ class ResNet(nn.Module):
     def __init__(self, block, layers, num_classes=10, conv_init='conv_delta_orthogonal'):
         self.inplanes = 64
         super(ResNet, self).__init__()
-        self.init_supported = ['conv_delta_orthogonal', 'kaiming_normal']
+        self.init_supported = ['conv_delta_orthogonal', 'conv_delta_orthogonal_relu', 'kaiming_normal']
         if conv_init in self.init_supported:
             self.conv_init = conv_init
         else:

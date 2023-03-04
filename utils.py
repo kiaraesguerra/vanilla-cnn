@@ -6,9 +6,11 @@ model_names = sorted(name for name in models.__dict__
 
 def get_model(args):
     
-    if args.pretrained:
-        print("=> using pre-trained model '{}'".format(args.model))
-        model = models.__dict__[args.model](c=args.width, num_classes=args.num_classes,  activation=args.activation, conv_init=args.conv_init, pretrained=True)
+    if 'resnet' in args.model:
+        model = models.__dict__[args.model](num_classes=args.num_classes, conv_init=args.conv_init)
+        if args.pretrained:
+            print("=> using pre-trained model '{}'".format(args.model))
+            model = models.__dict__[args.model](num_classes=args.num_classes, conv_init=args.conv_init, pretrained=True)
     else:
         print("=> creating model '{}'".format(args.model))
         model = models.__dict__[args.model](c=args.width, num_classes=args.num_classes, activation=args.activation, conv_init=args.conv_init)

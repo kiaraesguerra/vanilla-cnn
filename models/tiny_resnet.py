@@ -12,11 +12,7 @@ import _ext.nn as enn
 
 __all__ = ['ResNet', 'resnet20', 'resnet32', 'resnet44', 'resnet56', 'resnet110', 'resnet1202']
 
-def _weights_init(m):
-    classname = m.__class__.__name__
-    #print(classname)
-    if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
-        init.kaiming_normal_(m.weight)
+
 
 class LambdaLayer(nn.Module):
     def __init__(self, lambd):
@@ -58,10 +54,13 @@ class BasicBlock(nn.Module):
         out = F.relu(out)
         return out
 
-
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, num_classes=10):
+    def __init__(self, block, num_blocks, num_classes=10, conv_init='conv_delta_orthogonal'):
         super(ResNet, self).__init__()
+        self.init_supported = ['conv_delta_orthogonal', 'conv_delta_orthogonal_relu', 'kaiming_normal']
+        if conv_init in self.init_supported:
+            self.conv_init = conv_init
+            
         self.in_planes = 16
 
         self.conv1 = nn.Conv2d(3, 16, kernel_size=3, stride=1, padding=1, bias=False)
@@ -71,7 +70,18 @@ class ResNet(nn.Module):
         self.layer3 = self._make_layer(block, 64, num_blocks[2], stride=2)
         self.linear = nn.Linear(64, num_classes)
 
-        self.apply(_weights_init)
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                if self.conv_init == self.init_supported[0]:
+                    enn.init.conv_delta_orthogonal_(m.weight)
+                elif self.conv_init == self.init_supported[1]:
+                    enn.init_relu.conv_delta_orthogonal_relu_(m.weight)
+                else:
+                    nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                nn.init.constant_(m.weight, 1)
+                nn.init.constant_(m.bias, 0)
+
 
     def _make_layer(self, block, planes, num_blocks, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -93,43 +103,25 @@ class ResNet(nn.Module):
         return out
 
 
-def resnet20():
-    return ResNet(BasicBlock, [3, 3, 3])
+def resnet20(**kwargs):
+    return ResNet(BasicBlock, [3, 3, 3], **kwargs)
 
 
-def resnet32():
-    return ResNet(BasicBlock, [5, 5, 5])
+def resnet32(**kwargs):
+    return ResNet(BasicBlock, [5, 5, 5], **kwargs)
 
 
-def resnet44():
-    return ResNet(BasicBlock, [7, 7, 7])
+def resnet44(**kwargs):
+    return ResNet(BasicBlock, [7, 7, 7], **kwargs)
 
 
-def resnet56():
-    return ResNet(BasicBlock, [9, 9, 9])
+def resnet56(**kwargs):
+    return ResNet(BasicBlock, [9, 9, 9], **kwargs)
 
 
-def resnet110():
-    return ResNet(BasicBlock, [18, 18, 18])
+def resnet110(**kwargs):
+    return ResNet(BasicBlock, [18, 18, 18], **kwargs)
 
 
-def resnet1202():
-    return ResNet(BasicBlock, [200, 200, 200])
-
-
-def test(net):
-    import numpy as np
-    total_params = 0
-
-    for x in filter(lambda p: p.requires_grad, net.parameters()):
-        total_params += np.prod(x.data.numpy().shape)
-    print("Total number of params", total_params)
-    print("Total layers", len(list(filter(lambda p: p.requires_grad and len(p.data.size())>1, net.parameters()))))
-
-
-if __name__ == "__main__":
-    for net_name in __all__:
-        if net_name.startswith('resnet'):
-            print(net_name)
-            test(globals()[net_name]())
-            print()
+def resnet1202(**kwargs):
+    return ResNet(BasicBlock, [200, 200, 200], **kwargs)

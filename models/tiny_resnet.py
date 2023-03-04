@@ -75,7 +75,10 @@ class ResNet(nn.Module):
                 if self.conv_init == self.init_supported[0]:
                     enn.init.conv_delta_orthogonal_(m.weight)
                 elif self.conv_init == self.init_supported[1]:
-                    enn.init_relu.conv_delta_orthogonal_relu_(m.weight)
+                    if m.in_channels == 3:
+                        enn.init.conv_delta_orthogonal_(m.weight)
+                    else:
+                        enn.init_relu.conv_delta_orthogonal_relu_(m.weight)      
                 else:
                     nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
             elif isinstance(m, nn.BatchNorm2d):

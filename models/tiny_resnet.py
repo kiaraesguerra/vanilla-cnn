@@ -81,6 +81,9 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                torch.nn.init.orthogonal_(m.weight, 1)
+                
 
 
     def _make_layer(self, block, planes, num_blocks, stride):

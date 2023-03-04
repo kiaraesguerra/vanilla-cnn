@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
-
+import torch
 import sys
 sys.path.append("../")
 import _ext.nn as enn
@@ -135,6 +135,8 @@ class ResNet(nn.Module):
             elif isinstance(m, nn.BatchNorm2d):
                 nn.init.constant_(m.weight, 1)
                 nn.init.constant_(m.bias, 0)
+            elif isinstance(m, nn.Linear):
+                torch.nn.init.orthogonal_(m.weight, 1)
 
     def _make_layer(self, block, planes, blocks, stride=1):
         downsample = None

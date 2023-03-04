@@ -4,38 +4,6 @@ import math
 from sao_utils import *
 
 
-def delta_ortho_dense(module):
-    ortho_tensor = torch.tensor(orth(np.random.randn(max(module.in_channels, module.out_channels), 
-                                                     min(module.in_channels, module.out_channels)))).to('cuda')
-    ortho_tensor = ortho_tensor.T if module.in_channels > module.out_channels else ortho_tensor
-    ortho_conv = torch.zeros(module.weight.shape).to('cuda')
-    print(ortho_conv.shape)
-    with torch.no_grad():
-        ortho_conv[:, :, 1, 1] = ortho_tensor
-
-    return ortho_conv.to('cuda')
-
-
-def delta_SAO(module, degree):
-    in_ch = module.in_channels
-    out_ch = module.out_channels
-    
-    if out_ch > in_ch:
-        mask = d_regular_copy(in_ch, out_ch, degree)
-        sao_matrix = sao_2(mask).T
-        mask = mask.T
-    else:
-        mask = d_regular_copy(out_ch, in_ch, degree)
-        sao_matrix = sao_2(mask)
-
-    ortho_conv = torch.zeros(module.weight.shape).to('cuda')
-    conv_mask = torch.zeros(module.weight.shape).to('cuda')
-    ortho_conv[:,:, 1, 1] = sao_matrix
-    for i,j in product(range(out_ch), range(in_ch)):
-        conv_mask[i, j] = mask[i, j]
-    return ortho_conv, conv_mask
-
-
 def ortho_conv(module, degree=None):
     k = module.kernel_size[0]
     in_ch = module.in_channels
@@ -116,8 +84,6 @@ def orthogonal_dense(model, gain):
             torch.nn.init.orthogonal_(module.weight, gain)
 
   return model.to('cuda')
-
-
 
 def mask_structured(module, degree):
   in_ch = module.in_channels

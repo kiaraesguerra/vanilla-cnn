@@ -34,7 +34,7 @@ def conv_delta_orthogonal_relu_(tensor, gain=1.):
       raise ValueError("In_channels cannot be greater than out_channels.")
     
     # Generate a random matrix
-    a = tensor.new(tensor.size(0) // 2, tensor.size(0) // 2).normal_(0, 1)
+    a = tensor.new(tensor.size(0) // 2, tensor.size(1) // 2).normal_(0, 1)
     # Compute the qr factorization
     q, r = torch.qr(a)
     # Make Q uniform

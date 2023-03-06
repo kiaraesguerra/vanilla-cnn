@@ -61,7 +61,7 @@ parser.add_argument('--degree', type=int, default=None)
 parser.add_argument('--sparsity', type=float, default=None)
 parser.add_argument('--activation', type=str, default='tanh')
 parser.add_argument('--dirpath', type=str, default=None)
-parser.add_argument('--gain', type=int, default=1)
+parser.add_argument('--gain', type=float, default=1.0)
 
 args = parser.parse_args()
 

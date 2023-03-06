@@ -1,5 +1,5 @@
 import torch.nn as nn
-
+import torch
 import sys
 sys.path.append("../")
 import _ext.nn as enn
@@ -10,30 +10,33 @@ __all__ = ['van32', 'van128', 'van200', 'van256', 'van300', 'van512', 'van2048',
 
 
 class Vanilla(nn.Module):
-
-    def __init__(self, base, c, num_classes=10,  conv_init='conv_delta_orthogonal'):
+    def __init__(self, base, c, num_classes=10,  conv_init='conv_delta_orthogonal', gain=1):
         super(Vanilla, self).__init__()
         self.init_supported = ['conv_delta_orthogonal', 'conv_delta_orthogonal_relu', 'kaiming_normal']
+        self.gain = gain
         if conv_init in self.init_supported:
             self.conv_init = conv_init
         else:
             print('{} is not supported'.format(conv_init))
             self.conv_init = 'kaiming_normal'
         print('initialize conv by {}'.format(conv_init))
+        print(f'The gain used is {gain}')
         self.base = base
         self.fc = nn.Linear(c, num_classes)
 
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 if self.conv_init == self.init_supported[0]:
-                    enn.init.conv_delta_orthogonal_(m.weight)
+                    enn.init.conv_delta_orthogonal_(m.weight, gain)
                 elif self.conv_init == self.init_supported[1]:
                     if m.in_channels == 3:
-                        enn.init.conv_delta_orthogonal_(m.weight)
+                        enn.init.conv_delta_orthogonal_(m.weight, gain)
                     else:
-                        enn.init_relu.conv_delta_orthogonal_relu_(m.weight)      
+                        enn.init_relu.conv_delta_orthogonal_relu_(m.weight, gain)      
                 else:
                     nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m. nn.Linear):
+                torch.nn.init.orthogonal_(m.weight, gain)
 
     def forward(self, x):
         x = self.base(x)

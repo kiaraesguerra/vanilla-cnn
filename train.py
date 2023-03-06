@@ -61,6 +61,7 @@ parser.add_argument('--degree', type=int, default=None)
 parser.add_argument('--sparsity', type=float, default=None)
 parser.add_argument('--activation', type=str, default='tanh')
 parser.add_argument('--dirpath', type=str, default=None)
+parser.add_argument('--gain', type=int, default=1)
 
 args = parser.parse_args()
 
@@ -71,13 +72,11 @@ if __name__=='__main__':
     
     
     if args.pruning_method:
-        print(args.pruning_method)
         if args.degree:
-            print(args.degree)
-            model = custom_pruner_degree(model, args.pruning_method, args.degree)
+            model = custom_pruner_degree(model, args)
         elif args.sparsity:
             print(args.sparsity)
-            model = custom_pruner(model, args.pruning_method, args.sparsity)
+            model = custom_pruner(model, args)
             
         
     model = return_pl_module(model, args)

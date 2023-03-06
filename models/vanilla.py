@@ -35,7 +35,7 @@ class Vanilla(nn.Module):
                         enn.init_relu.conv_delta_orthogonal_relu_(m.weight, gain)      
                 else:
                     nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(m. nn.Linear):
+            elif isinstance(m, nn.Linear):
                 torch.nn.init.orthogonal_(m.weight, gain)
 
     def forward(self, x):

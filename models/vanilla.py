@@ -5,7 +5,7 @@ sys.path.append("../")
 import _ext.nn as enn
 
 
-__all__ = ['van32', 'van128', 'van200', 'van256', 'van300', 'van512', 'van2048',
+__all__ = ['van32', 'van128', 'van200', 'van256', 'van300', 'van512', 'van768', 'van1024', 'van2048',
            'van4096', 'van8192']
 
 
@@ -106,6 +106,17 @@ def van512(c,activation,**kwargs):
     model = Vanilla(*make_layers(512, c, activation), **kwargs)
     return model
 
+def van768(c,activation,**kwargs):
+    """Constructs a 768 layers vanilla model.
+    """
+    model = Vanilla(*make_layers(768, c, activation), **kwargs)
+    return model
+
+def van1024(c,activation,**kwargs):
+    """Constructs a 1024 layers vanilla model.
+    """
+    model = Vanilla(*make_layers(1024, c, activation), **kwargs)
+    return model
 
 def van2048(c,activation,*kwargs):
     """Constructs a 2048 layers vanilla model.
